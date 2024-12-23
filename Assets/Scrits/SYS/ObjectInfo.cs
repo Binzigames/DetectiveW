@@ -10,6 +10,6 @@ public class ObjectInfo : MonoBehaviour
     public GameObject modelPrefab; // Префаб моделі для показу
 
     [Header("Camera Settings")]
-    public Vector3 cameraFocusPosition = new Vector3(0, 2, -5); // Позиція камери для огляду
-    public Vector3 cameraFocusRotation = new Vector3(10, 0, 0); // Орієнтація камери для огляду (в градусах)
+    public GameObject cameraTarget; // Об'єкт, відносно якого буде позиціонуватись камера
+    public Vector3 cameraRotation = new Vector3(10, 0, 0); // Орієнтація камери
 }

@@ -17,6 +17,7 @@ public class ObjectInteractor : MonoBehaviour
     [Header("Camera Settings")]
     public Transform cameraTransform;   // Камера, що використовується
     public float moveSpeed = 5f;        // Швидкість руху камери
+    public float rotationSpeed = 5f;    // Швидкість обертання камери
     public Vector3 defaultCameraPosition; // Стандартна позиція камери
     public Vector3 defaultCameraRotation; // Стандартна орієнтація камери (градуси)
 
@@ -24,6 +25,7 @@ public class ObjectInteractor : MonoBehaviour
     private Vector3 targetCameraPosition; // Цільова позиція камери
     private Quaternion targetCameraRotation; // Цільова орієнтація камери
     private bool isMovingToObject = false; // Статус руху камери
+    private bool isRotating = false; // Статус обертання камери
 
     void Start()
     {
@@ -69,12 +71,16 @@ public class ObjectInteractor : MonoBehaviour
         if (isMovingToObject)
         {
             cameraTransform.position = Vector3.Lerp(cameraTransform.position, targetCameraPosition, Time.deltaTime * moveSpeed);
-            cameraTransform.rotation = Quaternion.Lerp(cameraTransform.rotation, targetCameraRotation, Time.deltaTime * moveSpeed);
+
+            // Плавний поворот камери до об'єкта
+            if (isRotating)
+            {
+                cameraTransform.rotation = Quaternion.RotateTowards(cameraTransform.rotation, targetCameraRotation, rotationSpeed * Time.deltaTime);
+            }
 
             if (Vector3.Distance(cameraTransform.position, targetCameraPosition) < 0.1f)
             {
                 cameraTransform.position = targetCameraPosition;
-                cameraTransform.rotation = targetCameraRotation;
                 isMovingToObject = false;
             }
         }
@@ -113,10 +119,23 @@ public class ObjectInteractor : MonoBehaviour
 
         selectedObject = obj;
 
-        // Встановлюємо цільову позицію камери
-        targetCameraPosition = info.cameraFocusPosition;
-        targetCameraRotation = Quaternion.Euler(info.cameraFocusRotation);
-        isMovingToObject = true;
+        // Перевіряємо, чи є у об'єкта камера-таргет
+        if (info.cameraTarget != null)
+        {
+            // Встановлюємо цільову позицію камери, враховуючи позицію таргету
+            targetCameraPosition = info.cameraTarget.transform.position;
+            targetCameraRotation = Quaternion.Euler(info.cameraRotation);
+            isRotating = true;
+            isMovingToObject = true;
+        }
+        else
+        {
+            // Якщо камера-таргет не вказано, використовуємо стандартну позицію
+            targetCameraPosition = obj.transform.position + new Vector3(0, 2, -5); // Приклад відстані
+            targetCameraRotation = Quaternion.Euler(info.cameraRotation);
+            isRotating = true;
+            isMovingToObject = true;
+        }
 
         // Показуємо інформацію
         infoPanel.SetActive(true);
@@ -138,6 +157,7 @@ public class ObjectInteractor : MonoBehaviour
         // Встановлюємо цільову позицію камери як стандартну
         targetCameraPosition = defaultCameraPosition;
         targetCameraRotation = Quaternion.Euler(defaultCameraRotation);
+        isRotating = false;
         isMovingToObject = true;
 
         // Ховаємо UI елементи
