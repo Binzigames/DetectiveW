@@ -2865,7 +2865,7 @@ MonoBehaviour:
   m_PivotOffset: {x: 0, y: 0, z: 0}
   m_AmplitudeGain: 0.5
   m_FrequencyGain: 0.5
-  mNoiseOffsets: {x: 0, y: 0, z: 0}
+  mNoiseOffsets: {x: -843.5731, y: -259.89066, z: 858.952}
 --- !u!1 &961731255
 GameObject:
   m_ObjectHideFlags: 0
